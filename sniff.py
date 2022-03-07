@@ -25,8 +25,13 @@ class MsgpHandler:
             sport, dport = [tcp.sport, tcp.dport]
             tupl = (str(ip1), str(ip2), tcp.sport, tcp.dport)
             if tupl not in self.conn:
-                self.conn[tupl] = BytesIO()
-            self.conn[tupl].write(tcp.data)
+                self.conn[tupl] = msgpack.Unpacker(raw=True)
+            self.conn[tupl].feed(tcp.data)
+            if len(tcp.data):
+                print("{0}:{2} -> {1}:{3}".format(*tupl))
+                for unpacked in self.conn[tupl]:
+                    print("\t", unpacked)
+
 
 
 if __name__ == '__main__':
@@ -36,9 +41,3 @@ if __name__ == '__main__':
     for ts, pkt in src:
         m.process(ts, pkt)
 
-    for (conn, buff) in m.conn.items():
-        print("{0}:{2} -> {1}:{3}".format(*conn))
-        buff.seek(0)
-        unpacker = msgpack.Unpacker(buff, raw=True)
-        for unpacked in unpacker:
-            print("\t", unpacked)
