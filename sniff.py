@@ -39,6 +39,6 @@ if __name__ == '__main__':
     for (conn, buff) in m.conn.items():
         print("{0}:{2} -> {1}:{3}".format(*conn))
         buff.seek(0)
-        unpacker = msgpack.Unpacker(buff, raw=False)
+        unpacker = msgpack.Unpacker(buff, raw=True)
         for unpacked in unpacker:
             print("\t", unpacked)
